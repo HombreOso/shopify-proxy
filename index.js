@@ -7,48 +7,51 @@ const fetch = (url, init) => import('node-fetch').then(module => module.default(
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+const url = `https://${process.env.SHOPIFY_STORE_URL}/admin/api/${process.env.SHOPIFY_API_VERSION}/graphql.json`;
+
 // Middleware
-app.use(express.json());
+const CORS = require('cors');
+
+// Allow requests from your Shopify store's domain
+app.use(CORS({
+  origin: 'https://test-wishlist-tentech.myshopify.com', // Replace with your store's URL
+  methods: ['GET', 'POST'],
+  credentials: true,
+}));
 // Optionally, enable CORS for your frontend domain
 // app.use(cors({ origin: 'https://yourstore.myshopify.com' }));
 
 // Proxy Endpoint to Update Wishlist User IDs
-app.put('/update-wishlist/:productId', async (req, res) => {
+app.post('/update-wishlist/:productId', async (req, res) => {
   const { productId } = req.params;
-  const { newWishlistUserIds } = req.body;
 
-  const url = `https://${process.env.SHOPIFY_STORE_URL}/admin/api/2023-01/products/${productId}/metafields.json`;
-  const metafieldData = {
-    metafield: {
-      namespace: 'custom',
-      key: 'wishlist_user_ids',
-      value: JSON.stringify(newWishlistUserIds),
-      type: 'json',
-    },
-  };
+  const {query, variables} = req.body;
+
+  console.log("query:", query)
 
   try {
-    const response = await fetch(url, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Shopify-Access-Token': process.env.SHOPIFY_ACCESS_TOKEN,
-      },
-      body: JSON.stringify(metafieldData),
-    });
+    //const latestVersion = await fetchLatestStableVersion();
+    // Make a POST request to the Shopify GraphQL Admin API
+    const response = await axios.post(
+      url, // Adjust the version if needed
+      { query, variables },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Shopify-Access-Token': process.env.SHOPIFY_ACCESS_TOKEN,
+        },
+      }
+    );
 
-    if (!response.ok) {
-      const errorData = await response.text();
-      return res.status(response.status).send(errorData);
-    }
-
-    const data = await response.json();
-    res.status(200).json(data);
+    // Send back the response from Shopify API
+    res.status(200).json(response.data);
   } catch (error) {
-    console.error('Error updating metafield:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    // Handle errors
+    const errorMessage = error.response?.data || error.message || 'An error occurred';
+    res.status(500).json({ error: errorMessage });
   }
 });
+  
 
 // GET Endpoint to Retrieve Wishlist User IDs
 app.post('/get-wishlist/:productId', async (req, res) => {
@@ -58,12 +61,13 @@ app.post('/get-wishlist/:productId', async (req, res) => {
 
     console.log("query:", query)
   
-    const url = `https://${process.env.SHOPIFY_STORE_URL}/admin/api/${process.env.SHOPIFY_API_VERSION}/graphql.json`;
+    
   
     try {
+        //const latestVersion = await fetchLatestStableVersion();
         // Make a POST request to the Shopify GraphQL Admin API
         const response = await axios.post(
-          `https://${process.env.SHOPIFY_STORE_URL}/admin/api/2024-10/graphql.json`, // Adjust the version if needed
+          url, // Adjust the version if needed
           { query, variables },
           {
             headers: {
