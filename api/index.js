@@ -12,6 +12,10 @@ const url = `https://${process.env.SHOPIFY_STORE_URL}/admin/api/${process.env.SH
 // Middleware
 const CORS = require('cors');
 
+
+// Middleware
+app.use(express.json()); // To parse JSON bodies 
+
 // Allow requests from your Shopify store's domain
 app.use(CORS({
   origin: 'https://test-wishlist-tentech.myshopify.com', // Replace with your store's URL
