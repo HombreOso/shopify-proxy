@@ -30,6 +30,10 @@ app.use(CORS({
 // Handle preflight requests
 app.options('*', CORS());
 
+app.get('/', async (req, res) => {
+  res.status(200).json("GET POssible");
+})
+
 // Proxy Endpoint to Update Wishlist User IDs
 app.post('/update-wishlist/:productId', async (req, res) => {
   const { productId } = req.params;
