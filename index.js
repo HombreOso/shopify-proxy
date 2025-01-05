@@ -48,6 +48,8 @@ app.post('/update-wishlist/:productId', async (req, res) => {
         headers: {
           'Content-Type': 'application/json',
           'X-Shopify-Access-Token': process.env.SHOPIFY_ACCESS_TOKEN,
+          'Access-Control-Allow-Origin': `https://${process.env.SHOPIFY_STORE_URL}.myshopify.com`,
+          'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
         },
       }
     );
