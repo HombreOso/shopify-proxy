@@ -17,13 +17,18 @@ const CORS = require('cors');
 app.use(express.json()); // To parse JSON bodies 
 
 // Allow requests from your Shopify store's domain
+// CORS Configuration
 app.use(CORS({
-  origin: 'https://test-wishlist-tentech.myshopify.com', // Replace with your store's URL
-  methods: ['GET', 'POST'],
-  credentials: true,
+  origin: 'https://test-wishlist-tentech.myshopify.com', // Exact Shopify store URL
+  methods: ['GET', 'POST', 'OPTIONS'], // Include OPTIONS for preflight
+  allowedHeaders: ['Content-Type', 'Authorization'], // Specify allowed headers
+  credentials: true, // Allow cookies and other credentials
 }));
 // Optionally, enable CORS for your frontend domain
 // app.use(cors({ origin: 'https://yourstore.myshopify.com' }));
+
+// Handle preflight requests
+app.options('*', CORS());
 
 // Proxy Endpoint to Update Wishlist User IDs
 app.post('/update-wishlist/:productId', async (req, res) => {
