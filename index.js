@@ -21,7 +21,7 @@ app.use(express.json()); // To parse JSON bodies
 app.use(CORS({
   origin: 'https://test-wishlist-tentech.myshopify.com', // Exact Shopify store URL
   methods: ['GET', 'POST', 'OPTIONS'], // Include OPTIONS for preflight
-  allowedHeaders: ['Content-Type', 'Authorization'], // Specify allowed headers
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Shopify-Access-Token', 'Access-Control-Allow-Origin', 'Access-Control-Allow-Methods'], // Specify allowed headers
   credentials: true, // Allow cookies and other credentials
 }));
 // Optionally, enable CORS for your frontend domain
