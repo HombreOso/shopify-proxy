@@ -107,7 +107,45 @@ app.post('/get-wishlist/:productId', async (req, res) => {
       }
   });
 
-// Start Server
+// GET Endpoint to Retrieve Wishlist User IDs
+app.post('/get-all-products', async (req, res) => {
+  const { productId } = req.params;
+
+  const {query, variables} = req.body;
+
+  console.log("query:", query)
+
+  
+
+  try {
+      //const latestVersion = await fetchLatestStableVersion();
+      // Make a POST request to the Shopify GraphQL Admin API
+      const response = await axios.post(
+        url, // Adjust the version if needed
+        { query, variables },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'X-Shopify-Access-Token': process.env.SHOPIFY_ACCESS_TOKEN,
+            'Access-Control-Allow-Origin': `https://${process.env.SHOPIFY_STORE_URL}.myshopify.com`,
+            'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+      },
+          },
+        
+      );
+  
+      // Send back the response from Shopify API
+      res.status(200).json(response.data);
+    } catch (error) {
+      // Handle errors
+      const errorMessage = error.response?.data || error.message || 'An error occurred';
+      res.status(500).json({ error: errorMessage });
+    }
+});
+
+
+  // Start Server
 app.listen(PORT, () => {
   console.log(`Proxy server running on port ${PORT}`);
 });
